@@ -87,3 +87,53 @@ class CarRepository:
             # Handle other errors
             print(f"An error occurred: {e}")
             return []
+        
+    @classmethod
+    async def delete_car(cls, car_id: int) -> bool:
+        try:
+            async with new_session() as session:
+                query = select(CarOrm).where(CarOrm.id == car_id)
+                result = await session.execute(query)
+                car_model = result.scalars().first()
+
+                if car_model is None:
+                    raise Exception("Car not found")
+
+                await session.delete(car_model)
+                await session.commit()
+
+                return True
+            
+        except Exception as e:
+            # Handle other errors
+            print(f"An error occurred: {e}")
+            return False
+    
+    @classmethod
+    async def update_car(cls, car_id: int, data: CarCreate) -> bool:
+        try:
+            async with new_session() as session:
+                query = select(CarOrm).where(CarOrm.id == car_id)
+                result = await session.execute(query)
+                car_model = result.scalars().first()
+
+                if car_model is None:
+                    raise Exception("Car not found")
+
+                car_dict = data.model_dump()
+                for key, value in car_dict.items():
+                    setattr(car_model, key, value)
+
+                await session.commit()
+
+                return True
+            
+        except ValidationError as e:
+            # Handle validation errors
+            print(f"Validation error: {e}")
+            return False
+        
+        except Exception as e:
+            # Handle other errors
+            print(f"An error occurred: {e}")
+            return False
