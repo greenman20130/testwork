@@ -1,0 +1,7 @@
+
+/src/__pycache__
+/src/car/__pycache__
+/venv
+car.db
+info.log
+src/__init__.py

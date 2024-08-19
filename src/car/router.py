@@ -9,7 +9,7 @@ router = APIRouter(prefix="/car", tags=["Car"])
 
 
 @router.post("")
-async def add_car(car: Car = Depends()) -> CarId:
+async def add_car(car: Car) -> CarId:
     """Add a new car to the database."""
     try:
         car_id = await CarRepository.add_car(car)
@@ -51,3 +51,24 @@ async def get_cars_by_filters(
         return cars
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred while retrieving cars.")
+
+
+@router.delete("/{car_id}")
+async def delete_car(car_id: int):
+    """Delete a car by its ID."""
+    try:
+        await CarRepository.delete_car(car_id)
+        return {'status': 'deleted'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while deleting the car.")
+    
+
+
+@router.put("/{car_id}")
+async def update_car(car_id: int, car: Car) -> bool:
+    """Update a car by its ID."""
+    try:
+        car_id = await CarRepository.update_car(car_id, car)
+        return car_id
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while updating the car.")
